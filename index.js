@@ -126,7 +126,7 @@
             rotation: 180,
             domain: {
               x: [0, 1],
-              y: [0, 0.9], // shifted down slightly
+              y: [0, 1], // shifted down slightly
             },
           },
         ];
@@ -134,9 +134,9 @@
         const layoutPie = {
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
-          margin: { t: 0, r: 0, l: 0, b: 0 },
-          width: 350, // slightly wider
-          height: 175, // slightly taller
+          margin: { t: 60, r: 0, l: 0, b: 0 },
+          width: 450, // slightly wider
+          height: 300, // slightly taller
           annotations: [
             {
               x: 0.5,
