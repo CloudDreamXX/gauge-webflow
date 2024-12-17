@@ -81,7 +81,7 @@
                 range: [dfi.YTD_0_percentile, dfi.YTD_100_percentile],
                 visible: false,
               },
-              bar: { color: "#fff", thickness: 0.1 },
+              bar: { color: "#fff", thickness: 0.3 },
               borderwidth: 0,
               steps: [],
             },
@@ -95,7 +95,16 @@
         },
       };
 
-      Plotly.newPlot(this.chartContainerId, fig.data, fig.layout);
+      Plotly.newPlot(this.chartContainerId, fig.data, fig.layout).then(() => {
+        const chartElem = document.getElementById(this.chartContainerId);
+        chartElem.style.position = "absolute";
+
+        const paths = chartElem.getElementsByTagName("path");
+        if (paths.length > 0) {
+          const barPath = paths[paths.length - 1];
+          barPath.style.strokeLinecap = "round";
+        }
+      });
     }
 
     showLoader() {
