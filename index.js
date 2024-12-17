@@ -96,6 +96,7 @@
 
     /**
      * Plots the gauge or pie chart depending on the variant.
+     * Adjust domain and annotation positions to move the chart where it should be.
      * @param {object} data - Data from the backend.
      * @param {string} token - The token.
      * @param {string|number} period - The period.
@@ -105,9 +106,8 @@
       const value = dfi.YTD_last;
 
       if (this.variant === "gradientSmallBar") {
-        // gradientSmallBar variant:
-        // - 30% bottom is always white
-        // - the remaining 70% is split into filled (value-proportional) and remainder
+        // For gradientSmallBar:
+        // Position the donut chart closer to the center using domain
         const whitePart = 30;
         const filledPart = value * 70;
         const remainderPart = (1 - value) * 70;
@@ -116,7 +116,7 @@
           {
             type: "pie",
             values: [whitePart, filledPart, remainderPart],
-            hole: 0.8, // Increased hole for thinner ring
+            hole: 0.8,
             sort: false,
             marker: {
               colors: ["#ffffff", "#6CC2DD", "#d3d3d3"],
@@ -124,7 +124,11 @@
             textinfo: "none",
             hoverinfo: "none",
             showlegend: false,
-            rotation: 180, // White part at bottom center
+            rotation: 180,
+            domain: {
+              x: [0, 1],
+              y: [0, 1],
+            },
           },
         ];
 
@@ -132,12 +136,12 @@
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
           margin: { t: 0, r: 0, l: 0, b: 0 },
-          width: 300, // Smaller width
-          height: 150, // Smaller height
+          width: 300,
+          height: 150,
           annotations: [
             {
               x: 0.5,
-              y: 0.5,
+              y: 0.46, // slightly lower to align with background
               xref: "paper",
               yref: "paper",
               text: value.toFixed(4),
@@ -157,10 +161,14 @@
           const plotContainer = chartElem.querySelector(".plot-container");
           if (plotContainer) {
             plotContainer.style.position = "absolute";
+            // Adjust position if needed
+            plotContainer.style.top = "0px";
+            plotContainer.style.left = "0px";
           }
         });
       } else {
-        // default variant using a gauge indicator
+        // Default variant with gauge
+        // Use domain to center the gauge
         const fig = {
           data: [
             {
@@ -180,9 +188,13 @@
                   range: [dfi.YTD_0_percentile, dfi.YTD_100_percentile],
                   visible: false,
                 },
-                bar: { color: "#fff", thickness: 0.15 }, // Thinner bar
+                bar: { color: "#fff", thickness: 0.15 },
                 borderwidth: 0,
                 steps: [],
+              },
+              domain: {
+                x: [0, 1],
+                y: [0, 1],
               },
             },
           ],
@@ -191,8 +203,8 @@
             plot_bgcolor: "transparent",
             font: { family: "Arial" },
             margin: { t: 0, r: 0, l: 0, b: 0 },
-            width: 300, // Smaller width
-            height: 150, // Smaller height
+            width: 300,
+            height: 150,
           },
         };
 
@@ -202,10 +214,14 @@
             .querySelector(".plot-container");
           if (chartElem) {
             chartElem.style.position = "absolute";
+            // Adjust position if needed
+            chartElem.style.top = "0px";
+            chartElem.style.left = "0px";
 
             const numberElem = chartElem.querySelector(".number");
             if (numberElem) {
-              numberElem.style.transform = `translate(0, 28px)`;
+              // Move the number slightly if needed
+              numberElem.style.transform = `translate(0, 25px)`;
               numberElem.style.fontWeight = "600";
             }
 
