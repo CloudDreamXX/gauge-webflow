@@ -11,9 +11,26 @@
   }
 })(typeof window !== "undefined" ? window : this, function () {
   class CryptoGauge {
-    constructor(chartContainerId, loaderContainerId = null) {
+    /**
+     * @param {string} chartContainerId - ID of the element where the chart is rendered
+     * @param {string|null} loaderContainerId - ID of the loader element (can be null if loader is not needed)
+     * @param {string|null} arrowContainerId - ID of the arrow element (can be null if arrow is not needed)
+     * @param {number} defaultRotateAngle - Initial rotation angle (e.g., 208deg) for value 0
+     * @param {number} maxRotateAngle - Rotation angle for value 1 (e.g., 20deg)
+     */
+    constructor(
+      chartContainerId,
+      loaderContainerId = null,
+      arrowContainerId = null,
+      defaultRotateAngle = 0,
+      maxRotateAngle = 20,
+    ) {
       this.chartContainerId = chartContainerId;
       this.loaderContainerId = loaderContainerId;
+      this.arrowContainerId = arrowContainerId;
+      this.defaultRotateAngle = defaultRotateAngle;
+      this.maxRotateAngle = maxRotateAngle;
+
       // loader styles
       if (this.loaderContainerId) {
         const container = document.createElement("div");
@@ -60,6 +77,7 @@
       const data = await this.fetchGaugeData(token, period);
       if (data) {
         this.plotCryptoGauge(data, token, period);
+        this.updateArrowPosition(data);
       }
     }
 
@@ -96,28 +114,47 @@
       };
 
       Plotly.newPlot(this.chartContainerId, fig.data, fig.layout).then(() => {
-        const chartElem = document.querySelector(".plot-container");
+        const chartElem = document.getElementById(this.chartContainerId);
         chartElem.style.position = "absolute";
 
-        const numberElem = chartElem.querySelector(".number");
+        const plotContainer = chartElem.querySelector(".plot-container");
+        if (plotContainer) {
+          const svgElements = plotContainer.getElementsByTagName("svg");
+          if (svgElements.length > 0) {
+            Array.from(svgElements).forEach((svg) => {
+              svg.style.overflow = "visible";
+            });
+          }
 
-        const svgElements = chartElem.getElementsByTagName("svg");
+          const numberElem = plotContainer.querySelector(".number");
+          if (numberElem) {
+            numberElem.style.transform = "translate(0, 28px)";
+            numberElem.style.fontWeight = "600";
+          }
 
-        if (svgElements.length > 0) {
-          Array.from(svgElements).forEach((svg) => {
-            svg.style.overflow = "visible";
-          });
-        }
-
-        numberElem.style.transform = "translate(0, 28px)";
-        numberElem.style.fontWeight = "600";
-
-        const paths = chartElem.getElementsByTagName("path");
-        if (paths.length > 0) {
-          const barPath = paths[paths.length - 1];
-          barPath.style.strokeLinecap = "round";
+          const paths = plotContainer.getElementsByTagName("path");
+          if (paths.length > 0) {
+            const barPath = paths[paths.length - 1];
+            barPath.style.strokeLinecap = "round";
+          }
         }
       });
+    }
+
+    updateArrowPosition(data) {
+      if (!this.arrowContainerId) return;
+
+      const dfi = data.df_crypto[0];
+
+      const angle =
+        this.defaultRotateAngle +
+        (this.maxRotateAngle - this.defaultRotateAngle) * dfi.YTD_last;
+
+      const arrowElem = document.getElementById(this.arrowContainerId);
+      if (arrowElem) {
+        arrowElem.style.transform = `rotate(${angle}deg)`;
+        arrowElem.style.transformOrigin = "center center";
+      }
     }
 
     showLoader() {
