@@ -73,7 +73,7 @@
             mode: "gauge+number",
             value: dfi.YTD_last,
             number: {
-              font: { size: 24, color: "#9A59B5" },
+              font: { size: 20, color: "#9A59B5", fontWeight: "bold" },
               valueformat: ".4f",
             },
             gauge: {
@@ -91,13 +91,17 @@
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
           font: { family: "Arial" },
-          margin: { t: 0, r: 0, l: 0, b: 0 },
+          margin: { t: 0, r: 4, l: 4, b: 0 },
         },
       };
 
       Plotly.newPlot(this.chartContainerId, fig.data, fig.layout).then(() => {
-        const chartElem = document.getElementById(this.chartContainerId);
+        const chartElem = document.querySelector(".plot-container");
         chartElem.style.position = "absolute";
+
+        const numberElem = chartElem.querySelector(".number");
+
+        numberElem.style.transform = "translate(0, 18px)";
 
         const paths = chartElem.getElementsByTagName("path");
         if (paths.length > 0) {
