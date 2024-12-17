@@ -105,7 +105,7 @@
 
         if (svgElements.length > 0) {
           Array.from(svgElements).forEach((svg) => {
-            svg.style.overflowY = "visible";
+            svg.style.overflow = "visible";
           });
         }
 
