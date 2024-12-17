@@ -116,7 +116,7 @@
           {
             type: "pie",
             values: [whitePart, filledPart, remainderPart],
-            hole: 0.7, // donut-like chart
+            hole: 0.8, // Increased hole for thinner ring
             sort: false,
             marker: {
               colors: ["#ffffff", "#6CC2DD", "#d3d3d3"],
@@ -124,7 +124,7 @@
             textinfo: "none",
             hoverinfo: "none",
             showlegend: false,
-            rotation: 180, // rotate so white part is at the bottom
+            rotation: 180, // White part at bottom center
           },
         ];
 
@@ -132,6 +132,8 @@
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
           margin: { t: 0, r: 0, l: 0, b: 0 },
+          width: 300, // Smaller width
+          height: 150, // Smaller height
           annotations: [
             {
               x: 0.5,
@@ -178,7 +180,7 @@
                   range: [dfi.YTD_0_percentile, dfi.YTD_100_percentile],
                   visible: false,
                 },
-                bar: { color: "#fff", thickness: 0.3 },
+                bar: { color: "#fff", thickness: 0.15 }, // Thinner bar
                 borderwidth: 0,
                 steps: [],
               },
@@ -189,6 +191,8 @@
             plot_bgcolor: "transparent",
             font: { family: "Arial" },
             margin: { t: 0, r: 0, l: 0, b: 0 },
+            width: 300, // Smaller width
+            height: 150, // Smaller height
           },
         };
 
