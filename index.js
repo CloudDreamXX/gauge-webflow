@@ -96,18 +96,17 @@
 
     /**
      * Plots the gauge or pie chart depending on the variant.
-     * Adjust domain and annotation positions to move the chart where it should be.
-     * @param {object} data - Data from the backend.
-     * @param {string} token - The token.
-     * @param {string|number} period - The period.
      */
     plotCryptoGauge(data, token, period) {
       const dfi = data.df_crypto[0];
       const value = dfi.YTD_last;
 
       if (this.variant === "gradientSmallBar") {
-        // For gradientSmallBar:
-        // Position the donut chart closer to the center using domain
+        // gradientSmallBar variant adjustments:
+        // - Increase width for slightly wider chart
+        // - Move the chart lower by adjusting domain.y
+        // - Increase hole for thinner bar (0.85 instead of 0.8)
+
         const whitePart = 30;
         const filledPart = value * 70;
         const remainderPart = (1 - value) * 70;
@@ -116,7 +115,7 @@
           {
             type: "pie",
             values: [whitePart, filledPart, remainderPart],
-            hole: 0.8,
+            hole: 0.85, // thinner ring
             sort: false,
             marker: {
               colors: ["#ffffff", "#6CC2DD", "#d3d3d3"],
@@ -127,7 +126,7 @@
             rotation: 180,
             domain: {
               x: [0, 1],
-              y: [0, 1],
+              y: [0, 0.9], // shifted down slightly
             },
           },
         ];
@@ -136,12 +135,12 @@
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
           margin: { t: 0, r: 0, l: 0, b: 0 },
-          width: 300,
-          height: 150,
+          width: 350, // slightly wider
+          height: 175, // slightly taller
           annotations: [
             {
               x: 0.5,
-              y: 0.46, // slightly lower to align with background
+              y: 0.42, // lowered annotation a bit more
               xref: "paper",
               yref: "paper",
               text: value.toFixed(4),
@@ -161,14 +160,12 @@
           const plotContainer = chartElem.querySelector(".plot-container");
           if (plotContainer) {
             plotContainer.style.position = "absolute";
-            // Adjust position if needed
             plotContainer.style.top = "0px";
             plotContainer.style.left = "0px";
           }
         });
       } else {
-        // Default variant with gauge
-        // Use domain to center the gauge
+        // default variant adjustments remain as before
         const fig = {
           data: [
             {
@@ -214,13 +211,11 @@
             .querySelector(".plot-container");
           if (chartElem) {
             chartElem.style.position = "absolute";
-            // Adjust position if needed
             chartElem.style.top = "0px";
             chartElem.style.left = "0px";
 
             const numberElem = chartElem.querySelector(".number");
             if (numberElem) {
-              // Move the number slightly if needed
               numberElem.style.transform = `translate(0, 25px)`;
               numberElem.style.fontWeight = "600";
             }
