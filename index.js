@@ -114,7 +114,7 @@
       };
 
       Plotly.newPlot(this.chartContainerId, fig.data, fig.layout).then(() => {
-        const chartElem = document.getElementById(this.chartContainerId);
+        const chartElem = document.querySelector(".plotly");
         chartElem.style.position = "absolute";
 
         const plotContainer = chartElem.querySelector(".plot-container");
