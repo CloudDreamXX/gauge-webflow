@@ -110,6 +110,7 @@
         }
 
         numberElem.style.transform = "translate(0, 28px)";
+        numberElem.style.fontWeight = "600";
 
         const paths = chartElem.getElementsByTagName("path");
         if (paths.length > 0) {
