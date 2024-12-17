@@ -17,6 +17,7 @@
      * @param {string|null} arrowContainerId - ID of the arrow element (can be null if arrow is not needed)
      * @param {number} defaultRotateAngle - Initial rotation angle (e.g., 208deg) for value 0
      * @param {number} maxRotateAngle - Rotation angle for value 1 (e.g., 20deg)
+     * @param {boolean} isBig - If true, the chart is rendered in a bigger size
      */
     constructor(
       chartContainerId,
@@ -24,6 +25,7 @@
       arrowContainerId = null,
       defaultRotateAngle = 0,
       maxRotateAngle = 20,
+      isBig = false,
     ) {
       this.chartContainerId = chartContainerId;
       this.loaderContainerId = loaderContainerId;
@@ -112,6 +114,11 @@
           margin: { t: 0, r: 0, l: 0, b: 0 },
         },
       };
+
+      if (this.isBig) {
+        fig.layout.width = 200;
+        fig.layout.height = 200;
+      }
 
       Plotly.newPlot(this.chartContainerId, fig.data, fig.layout).then(() => {
         const chartElem = document.querySelector(".plot-container");
