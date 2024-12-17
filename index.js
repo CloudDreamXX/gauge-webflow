@@ -17,6 +17,7 @@
      * @param {string|null} arrowContainerId - ID of the arrow element (can be null if arrow is not needed)
      * @param {number} defaultRotateAngle - Initial rotation angle (e.g., 208deg) for value 0
      * @param {number} maxRotateAngle - Rotation angle for value 1 (e.g., 20deg)
+     * @param {string} variant - Chart variant (default, gradientSmallBar)
      */
     constructor(
       chartContainerId,
@@ -24,14 +25,15 @@
       arrowContainerId = null,
       defaultRotateAngle = 0,
       maxRotateAngle = 20,
+      variant = "default",
     ) {
       this.chartContainerId = chartContainerId;
       this.loaderContainerId = loaderContainerId;
       this.arrowContainerId = arrowContainerId;
       this.defaultRotateAngle = defaultRotateAngle;
       this.maxRotateAngle = maxRotateAngle;
+      this.variant = variant;
 
-      // loader styles
       if (this.loaderContainerId) {
         const container = document.createElement("div");
         container.innerHTML = `
@@ -83,15 +85,46 @@
 
     plotCryptoGauge(data, token, period) {
       const dfi = data.df_crypto[0];
+      const value = dfi.YTD_last;
+
+      let numberColor = "#9A59B5";
+      let barThickness = 0.3;
+      let steps = [];
+      let barColor = "#fff";
+      let numberFontSize = 20;
+      let numberTranslateY = 28;
+
+      if (this.variant === "gradientSmallBar") {
+        numberColor = "#fff";
+        barThickness = 0.1;
+        steps = [
+          { range: [0, 0.2], color: "#6D65A5" },
+          { range: [0.2, 0.4], color: "#86C7B7" },
+          { range: [0.4, 0.6], color: "#CCD0D5" },
+          { range: [0.6, 0.8], color: "#E4E7EA" },
+          { range: [0.8, 1], color: "#F1989F" },
+        ];
+
+        // Бар цвет можно убрать, чтобы цвет был только steps
+        barColor = null;
+
+        // Можно подрегулировать размер и позицию числа
+        numberFontSize = 20;
+        numberTranslateY = 28;
+      }
 
       const fig = {
         data: [
           {
             type: "indicator",
             mode: "gauge+number",
-            value: dfi.YTD_last,
+            value: value,
             number: {
-              font: { size: 20, color: "#9A59B5", fontWeight: "bold" },
+              font: {
+                size: numberFontSize,
+                color: numberColor,
+                fontWeight: "bold",
+              },
               valueformat: ".4f",
             },
             gauge: {
@@ -99,9 +132,9 @@
                 range: [dfi.YTD_0_percentile, dfi.YTD_100_percentile],
                 visible: false,
               },
-              bar: { color: "#fff", thickness: 0.3 },
+              bar: { color: barColor, thickness: barThickness },
               borderwidth: 0,
-              steps: [],
+              steps: steps,
             },
           },
         ],
@@ -114,26 +147,30 @@
       };
 
       Plotly.newPlot(this.chartContainerId, fig.data, fig.layout).then(() => {
-        const chartElem = document.querySelector(".plot-container");
-        chartElem.style.position = "absolute";
+        const chartElem = document
+          .getElementById(this.chartContainerId)
+          .querySelector(".plot-container");
+        if (chartElem) {
+          chartElem.style.position = "absolute";
 
-        const numberElem = chartElem.querySelector(".number");
+          const numberElem = chartElem.querySelector(".number");
+          if (numberElem) {
+            numberElem.style.transform = `translate(0, ${numberTranslateY}px)`;
+            numberElem.style.fontWeight = "600";
+          }
 
-        const svgElements = chartElem.getElementsByTagName("svg");
+          const svgElements = chartElem.getElementsByTagName("svg");
+          if (svgElements.length > 0) {
+            Array.from(svgElements).forEach((svg) => {
+              svg.style.overflow = "visible";
+            });
+          }
 
-        if (svgElements.length > 0) {
-          Array.from(svgElements).forEach((svg) => {
-            svg.style.overflow = "visible";
-          });
-        }
-
-        numberElem.style.transform = "translate(0, 28px)";
-        numberElem.style.fontWeight = "600";
-
-        const paths = chartElem.getElementsByTagName("path");
-        if (paths.length > 0) {
-          const barPath = paths[paths.length - 1];
-          barPath.style.strokeLinecap = "round";
+          const paths = chartElem.getElementsByTagName("path");
+          if (paths.length > 0) {
+            const barPath = paths[paths.length - 1];
+            barPath.style.strokeLinecap = "round";
+          }
         }
       });
     }
@@ -142,13 +179,13 @@
       if (!this.arrowContainerId) return;
 
       const dfi = data.df_crypto[0];
+      const value = dfi.YTD_last;
 
       const angle =
         this.defaultRotateAngle +
-        (this.maxRotateAngle - this.defaultRotateAngle) * dfi.YTD_last;
+        (this.maxRotateAngle - this.defaultRotateAngle) * value;
 
       const arrowElem = document.getElementById(this.arrowContainerId);
-      console.log("arrowElem", arrowElem, angle);
       if (arrowElem) {
         arrowElem.style.transform = `rotate(${angle}deg)`;
       }
