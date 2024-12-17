@@ -111,13 +111,14 @@
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
           font: { family: "Arial" },
-          margin: { t: 30, r: 30, l: 30, b: 0 },
+          margin: { t: 0, r: 0, l: 0, b: 0 },
         },
       };
 
       if (this.isBig) {
-        fig.layout.width = 200;
-        fig.layout.height = 200;
+        fig.layout.margin.t = 30;
+        fig.layout.margin.r = 30;
+        fig.layout.margin.l = 30;
       }
 
       Plotly.newPlot(this.chartContainerId, fig.data, fig.layout).then(() => {
@@ -134,8 +135,14 @@
           });
         }
 
-        numberElem.style.transform = "translate(0, 28px)";
-        numberElem.style.fontWeight = "600";
+        if (this.isBig) {
+          numberElem.style.display = "none";
+          document.querySelector(".gauge2-value").innerHTML =
+            numberElem.innerHTML;
+        } else {
+          numberElem.style.transform = "translate(0, 28px)";
+          numberElem.style.fontWeight = "600";
+        }
 
         const paths = chartElem.getElementsByTagName("path");
         if (paths.length > 0) {
