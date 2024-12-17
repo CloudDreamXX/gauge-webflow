@@ -114,29 +114,26 @@
       };
 
       Plotly.newPlot(this.chartContainerId, fig.data, fig.layout).then(() => {
-        const chartElem = document.querySelector(".plotly");
+        const chartElem = document.querySelector(".plot-container");
         chartElem.style.position = "absolute";
 
-        const plotContainer = chartElem.querySelector(".plot-container");
-        if (plotContainer) {
-          const svgElements = plotContainer.getElementsByTagName("svg");
-          if (svgElements.length > 0) {
-            Array.from(svgElements).forEach((svg) => {
-              svg.style.overflow = "visible";
-            });
-          }
+        const numberElem = chartElem.querySelector(".number");
 
-          const numberElem = plotContainer.querySelector(".number");
-          if (numberElem) {
-            numberElem.style.transform = "translate(0, 28px)";
-            numberElem.style.fontWeight = "600";
-          }
+        const svgElements = chartElem.getElementsByTagName("svg");
 
-          const paths = plotContainer.getElementsByTagName("path");
-          if (paths.length > 0) {
-            const barPath = paths[paths.length - 1];
-            barPath.style.strokeLinecap = "round";
-          }
+        if (svgElements.length > 0) {
+          Array.from(svgElements).forEach((svg) => {
+            svg.style.overflow = "visible";
+          });
+        }
+
+        numberElem.style.transform = "translate(0, 28px)";
+        numberElem.style.fontWeight = "600";
+
+        const paths = chartElem.getElementsByTagName("path");
+        if (paths.length > 0) {
+          const barPath = paths[paths.length - 1];
+          barPath.style.strokeLinecap = "round";
         }
       });
     }
