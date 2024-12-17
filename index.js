@@ -111,7 +111,7 @@
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
           font: { family: "Arial" },
-          margin: { t: 0, r: 0, l: 0, b: 0 },
+          margin: { t: 40, r: 40, l: 40, b: 0 },
         },
       };
 
