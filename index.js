@@ -104,7 +104,7 @@
         const svgElements = chartElem.getElementsByTagName("svg");
 
         if (svgElements.length > 0) {
-          svgElements.forEach((svg) => {
+          Array.from(svgElements).forEach((svg) => {
             svg.style.overflowY = "visible";
           });
         }
