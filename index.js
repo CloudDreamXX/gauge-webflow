@@ -91,7 +91,7 @@
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
           font: { family: "Arial" },
-          margin: { t: 0, r: 4, l: 4, b: 0 },
+          margin: { t: 0, r: 0, l: 0, b: 0 },
         },
       };
 
@@ -101,7 +101,15 @@
 
         const numberElem = chartElem.querySelector(".number");
 
-        numberElem.style.transform = "translate(0, 18px)";
+        const svgElements = chartElem.getElementsByTagName("svg");
+
+        if (svgElements.length > 0) {
+          svgElements.forEach((svg) => {
+            svg.style.overflowY = "visible";
+          });
+        }
+
+        numberElem.style.transform = "translate(0, 28px)";
 
         const paths = chartElem.getElementsByTagName("path");
         if (paths.length > 0) {
