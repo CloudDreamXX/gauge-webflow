@@ -34,7 +34,7 @@
       this.maxRotateAngle = maxRotateAngle;
       this.isBig = isBig;
 
-      // loader styles
+      // Add loader styles if a loader container is provided
       if (this.loaderContainerId) {
         const container = document.createElement("div");
         container.innerHTML = `
@@ -49,6 +49,12 @@
       }
     }
 
+    /**
+     * Fetches gauge data from the API.
+     * @param {string} token - The token to fetch data for.
+     * @param {string} period - The period to fetch data for.
+     * @returns {Promise<Object>} - The fetched data as a JSON object.
+     */
     async fetchGaugeData(token, period) {
       try {
         this.showLoader();
@@ -76,6 +82,11 @@
       }
     }
 
+    /**
+     * Updates the chart with new data.
+     * @param {string} token - The token to update the chart for.
+     * @param {string} period - The period to update the chart for.
+     */
     async updateChart(token, period) {
       const data = await this.fetchGaugeData(token, period);
       if (data) {
@@ -84,6 +95,12 @@
       }
     }
 
+    /**
+     * Plots the crypto gauge using Plotly.
+     * @param {Object} data - The data to plot.
+     * @param {string} token - The token being plotted.
+     * @param {string} period - The period being plotted.
+     */
     plotCryptoGauge(data, token, period) {
       const dfi = data.df_crypto[0];
 
@@ -153,6 +170,10 @@
       });
     }
 
+    /**
+     * Updates the position of the arrow indicator.
+     * @param {Object} data - The data used to calculate the angle.
+     */
     updateArrowPosition(data) {
       if (!this.arrowContainerId) return;
 
@@ -169,6 +190,9 @@
       }
     }
 
+    /**
+     * Displays the loading indicator.
+     */
     showLoader() {
       if (this.loaderContainerId) {
         document.getElementById(this.loaderContainerId).style.display = "block";
@@ -176,6 +200,9 @@
       }
     }
 
+    /**
+     * Hides the loading indicator.
+     */
     hideLoader() {
       if (this.loaderContainerId) {
         document.getElementById(this.loaderContainerId).style.display = "none";
