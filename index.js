@@ -12,12 +12,11 @@
 })(typeof window !== "undefined" ? window : this, function () {
   class CryptoGauge {
     /**
-     * @param {string} chartContainerId - The ID of the element where the chart should be rendered.
-     * @param {string|null} loaderContainerId - The ID of the loader element (can be null if not needed).
-     * @param {string|null} arrowContainerId - The ID of the arrow element (can be null if not needed).
-     * @param {number} defaultRotateAngle - The initial rotation angle for value=0.
-     * @param {number} maxRotateAngle - The rotation angle for value=1.
-     * @param {string} variant - Chart variant ("default" or "gradientSmallBar").
+     * @param {string} chartContainerId - ID of the element where the chart is rendered
+     * @param {string|null} loaderContainerId - ID of the loader element (can be null if loader is not needed)
+     * @param {string|null} arrowContainerId - ID of the arrow element (can be null if arrow is not needed)
+     * @param {number} defaultRotateAngle - Initial rotation angle (e.g., 208deg) for value 0
+     * @param {number} maxRotateAngle - Rotation angle for value 1 (e.g., 20deg)
      */
     constructor(
       chartContainerId,
@@ -25,16 +24,14 @@
       arrowContainerId = null,
       defaultRotateAngle = 0,
       maxRotateAngle = 20,
-      variant = "default",
     ) {
       this.chartContainerId = chartContainerId;
       this.loaderContainerId = loaderContainerId;
       this.arrowContainerId = arrowContainerId;
       this.defaultRotateAngle = defaultRotateAngle;
       this.maxRotateAngle = maxRotateAngle;
-      this.variant = variant;
 
-      // If loaderContainerId is provided, append spinner styles
+      // loader styles
       if (this.loaderContainerId) {
         const container = document.createElement("div");
         container.innerHTML = `
@@ -49,11 +46,6 @@
       }
     }
 
-    /**
-     * Fetches gauge data from the backend.
-     * @param {string} token - The token (e.g. "btc").
-     * @param {string|number} period - The period (e.g. "30").
-     */
     async fetchGaugeData(token, period) {
       try {
         this.showLoader();
@@ -81,11 +73,6 @@
       }
     }
 
-    /**
-     * Updates the chart by fetching new data and re-plotting.
-     * @param {string} token - The token.
-     * @param {string|number} period - The period.
-     */
     async updateChart(token, period) {
       const data = await this.fetchGaugeData(token, period);
       if (data) {
@@ -94,170 +81,79 @@
       }
     }
 
-    /**
-     * Plots the gauge or pie chart depending on the variant.
-     */
     plotCryptoGauge(data, token, period) {
       const dfi = data.df_crypto[0];
-      const value = dfi.YTD_last;
 
-      if (this.variant === "gradientSmallBar") {
-        // gradientSmallBar variant adjustments:
-        // - Increase width for slightly wider chart
-        // - Move the chart lower by adjusting domain.y
-        // - Increase hole for thinner bar (0.85 instead of 0.8)
-
-        const whitePart = 30;
-        const filledPart = value * 70;
-        const remainderPart = (1 - value) * 70;
-
-        const dataPie = [
+      const fig = {
+        data: [
           {
-            type: "pie",
-            values: [whitePart, filledPart, remainderPart],
-            hole: 0.85, // thinner ring
-            sort: false,
-            marker: {
-              colors: ["#ffffff", "#6CC2DD", "#d3d3d3"],
+            type: "indicator",
+            mode: "gauge+number",
+            value: dfi.YTD_last,
+            number: {
+              font: { size: 20, color: "#9A59B5", fontWeight: "bold" },
+              valueformat: ".4f",
             },
-            textinfo: "none",
-            hoverinfo: "none",
-            showlegend: false,
-            rotation: 180,
-            domain: {
-              x: [0, 1],
-              y: [0, 1], // shifted down slightly
+            gauge: {
+              axis: {
+                range: [dfi.YTD_0_percentile, dfi.YTD_100_percentile],
+                visible: false,
+              },
+              bar: { color: "#fff", thickness: 0.3 },
+              borderwidth: 0,
+              steps: [],
             },
           },
-        ];
-
-        const layoutPie = {
+        ],
+        layout: {
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
-          margin: { t: 60, r: 0, l: 0, b: 0 },
-          width: 450, // slightly wider
-          height: 300, // slightly taller
-          annotations: [
-            {
-              x: 0.5,
-              y: 0.42, // lowered annotation a bit more
-              xref: "paper",
-              yref: "paper",
-              text: value.toFixed(4),
-              showarrow: false,
-              font: {
-                size: 20,
-                color: "#fff",
-                family: "Arial",
-                weight: "bold",
-              },
-            },
-          ],
-        };
+          font: { family: "Arial" },
+          margin: { t: 0, r: 0, l: 0, b: 0 },
+        },
+      };
 
-        Plotly.newPlot(this.chartContainerId, dataPie, layoutPie).then(() => {
-          const chartElem = document.getElementById(this.chartContainerId);
-          const plotContainer = chartElem.querySelector(".plot-container");
-          if (plotContainer) {
-            plotContainer.style.position = "absolute";
-            plotContainer.style.top = "0px";
-            plotContainer.style.left = "0px";
-          }
-        });
-      } else {
-        // default variant adjustments remain as before
-        const fig = {
-          data: [
-            {
-              type: "indicator",
-              mode: "gauge+number",
-              value: value,
-              number: {
-                font: {
-                  size: 20,
-                  color: "#9A59B5",
-                  fontWeight: "bold",
-                },
-                valueformat: ".4f",
-              },
-              gauge: {
-                axis: {
-                  range: [dfi.YTD_0_percentile, dfi.YTD_100_percentile],
-                  visible: false,
-                },
-                bar: { color: "#fff", thickness: 0.15 },
-                borderwidth: 0,
-                steps: [],
-              },
-              domain: {
-                x: [0, 1],
-                y: [0, 1],
-              },
-            },
-          ],
-          layout: {
-            paper_bgcolor: "transparent",
-            plot_bgcolor: "transparent",
-            font: { family: "Arial" },
-            margin: { t: 0, r: 0, l: 0, b: 0 },
-            width: 300,
-            height: 150,
-          },
-        };
+      Plotly.newPlot(this.chartContainerId, fig.data, fig.layout).then(() => {
+        const chartElem = document.querySelector(".plot-container");
+        chartElem.style.position = "absolute";
 
-        Plotly.newPlot(this.chartContainerId, fig.data, fig.layout).then(() => {
-          const chartElem = document
-            .getElementById(this.chartContainerId)
-            .querySelector(".plot-container");
-          if (chartElem) {
-            chartElem.style.position = "absolute";
-            chartElem.style.top = "0px";
-            chartElem.style.left = "0px";
+        const numberElem = chartElem.querySelector(".number");
 
-            const numberElem = chartElem.querySelector(".number");
-            if (numberElem) {
-              numberElem.style.transform = `translate(0, 25px)`;
-              numberElem.style.fontWeight = "600";
-            }
+        const svgElements = chartElem.getElementsByTagName("svg");
 
-            const svgElements = chartElem.getElementsByTagName("svg");
-            if (svgElements.length > 0) {
-              Array.from(svgElements).forEach((svg) => {
-                svg.style.overflow = "visible";
-              });
-            }
+        if (svgElements.length > 0) {
+          Array.from(svgElements).forEach((svg) => {
+            svg.style.overflow = "visible";
+          });
+        }
 
-            const paths = chartElem.getElementsByTagName("path");
-            if (paths.length > 0) {
-              const barPath = paths[paths.length - 1];
-              barPath.style.strokeLinecap = "round";
-            }
-          }
-        });
-      }
+        numberElem.style.transform = "translate(0, 28px)";
+        numberElem.style.fontWeight = "600";
+
+        const paths = chartElem.getElementsByTagName("path");
+        if (paths.length > 0) {
+          const barPath = paths[paths.length - 1];
+          barPath.style.strokeLinecap = "round";
+        }
+      });
     }
 
-    /**
-     * Updates the arrow position based on the value.
-     * @param {object} data - The data from the backend.
-     */
     updateArrowPosition(data) {
       if (!this.arrowContainerId) return;
+
       const dfi = data.df_crypto[0];
-      const value = dfi.YTD_last;
+
       const angle =
         this.defaultRotateAngle +
-        (this.maxRotateAngle - this.defaultRotateAngle) * value;
+        (this.maxRotateAngle - this.defaultRotateAngle) * dfi.YTD_last;
 
       const arrowElem = document.getElementById(this.arrowContainerId);
+      console.log("arrowElem", arrowElem, angle);
       if (arrowElem) {
         arrowElem.style.transform = `rotate(${angle}deg)`;
       }
     }
 
-    /**
-     * Shows the loader if defined.
-     */
     showLoader() {
       if (this.loaderContainerId) {
         document.getElementById(this.loaderContainerId).style.display = "block";
@@ -265,9 +161,6 @@
       }
     }
 
-    /**
-     * Hides the loader if defined.
-     */
     hideLoader() {
       if (this.loaderContainerId) {
         document.getElementById(this.loaderContainerId).style.display = "none";
