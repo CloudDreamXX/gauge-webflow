@@ -148,9 +148,9 @@
         (this.maxRotateAngle - this.defaultRotateAngle) * dfi.YTD_last;
 
       const arrowElem = document.getElementById(this.arrowContainerId);
+      console.log("arrowElem", arrowElem, angle);
       if (arrowElem) {
         arrowElem.style.transform = `rotate(${angle}deg)`;
-        arrowElem.style.transformOrigin = "center center";
       }
     }
 
