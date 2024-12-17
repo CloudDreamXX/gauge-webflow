@@ -32,6 +32,7 @@
       this.arrowContainerId = arrowContainerId;
       this.defaultRotateAngle = defaultRotateAngle;
       this.maxRotateAngle = maxRotateAngle;
+      this.isBig = isBig;
 
       // loader styles
       if (this.loaderContainerId) {
