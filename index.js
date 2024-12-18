@@ -140,7 +140,8 @@
       }
 
       Plotly.newPlot(this.chartContainerId, fig.data, fig.layout).then(() => {
-        const chartElem = document.querySelector(".plot-container");
+        const chartContainer = document.getElementById(this.chartContainerId);
+        const chartElem = chartContainer.querySelector(".plot-container");
         chartElem.style.position = "absolute";
 
         const numberElem = chartElem.querySelector(".number");
