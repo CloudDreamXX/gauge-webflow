@@ -180,9 +180,7 @@
 
       const dfi = data.df_crypto[0];
 
-      const angle =
-        this.defaultRotateAngle +
-        (this.maxRotateAngle - this.defaultRotateAngle) * dfi.YTD_last;
+      const angle = this.defaultRotateAngle + dfi.YTD_last * 100;
       console.log(
         angle,
         this.maxRotateAngle,
