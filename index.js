@@ -180,13 +180,16 @@
 
       const dfi = data.df_crypto[0];
 
-      const angle = this.defaultRotateAngle + dfi.YTD_last * 100;
-      console.log(
-        angle,
-        this.maxRotateAngle,
-        this.defaultRotateAngle,
-        dfi.YTD_last,
-      );
+      // Normalize the value between 0 and 1
+      const normalizedValue =
+        (dfi.YTD_last - dfi.YTD_0_percentile) /
+        (dfi.YTD_100_percentile - dfi.YTD_0_percentile);
+
+      // Calculate the angle using the normalized value
+      const angle =
+        this.defaultRotateAngle +
+        (this.maxRotateAngle - this.defaultRotateAngle) * normalizedValue;
+
       const arrowElem = document.getElementById(this.arrowContainerId);
       if (arrowElem) {
         arrowElem.style.transform = `rotate(${angle}deg)`;
